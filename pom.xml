@@ -14,9 +14,15 @@
         <maven.compiler.release>21</maven.compiler.release>
         <junit.jupiter.version>5.10.0</junit.jupiter.version>
         <mockito.version>5.10.0</mockito.version>
+        <commons.lang3.version>3.17.0</commons.lang3.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons.lang3.version}</version>
+        </dependency>
 
         <!-- Testing -->
         <dependency>
