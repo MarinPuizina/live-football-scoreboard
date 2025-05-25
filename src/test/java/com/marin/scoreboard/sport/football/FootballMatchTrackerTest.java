@@ -167,7 +167,8 @@ class FootballMatchTrackerTest {
 
             assertDoesNotThrow(() -> matchTracker.updateScore(homeTeam, awayTeam, homeScore, awayScore));
 
-            // TODO: verify scores in future
+            assertEquals(homeScore, matchTracker.getSummary().getFirst().getHomeScore());
+            assertEquals(awayScore, matchTracker.getSummary().getFirst().getAwayScore());
         }
     }
 

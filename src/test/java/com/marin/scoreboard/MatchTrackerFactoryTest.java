@@ -18,11 +18,6 @@ class MatchTrackerFactoryTest {
             MatchTracker footballMatchTracker = MatchTrackerFactory.createFootballMatchTracker();
             assertNotNull(footballMatchTracker);
             assertInstanceOf(FootballMatchTracker.class, footballMatchTracker);
-
-            footballMatchTracker.endMatch("Croatia", "Norway");
-            footballMatchTracker.updateScore("Croatia", "Norway", 1, 0);
-            footballMatchTracker.getSummary();
-            footballMatchTracker.endMatch("Croatia", "Norway");
         }
     }
 }

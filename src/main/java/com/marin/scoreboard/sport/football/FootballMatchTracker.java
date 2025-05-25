@@ -35,11 +35,6 @@ public class FootballMatchTracker implements MatchTracker {
         startedMatches.put(matchId, footballMatch);
     }
 
-    // TODO: Move to FootballMatch class?
-    public static String createMatchId(String homeTeam, String awayTeam) {
-        return homeTeam.toLowerCase().trim() + " vs " + awayTeam.toLowerCase().trim();
-    }
-
     /**
      * Updates the score of the given match between the given teams.
      *
@@ -59,17 +54,6 @@ public class FootballMatchTracker implements MatchTracker {
 
         match.updateScore(homeScore, awayScore);
     }
-
-
-    Match findMatch(String homeTeam, String awayTeam) throws IllegalArgumentException {
-        final String matchId = createMatchId(homeTeam, awayTeam);
-        final Match match = startedMatches.get(matchId);
-        if (match == null) {
-            throw new IllegalArgumentException("Match not found.");
-        }
-        return match;
-    }
-
 
     /**
      * Ends the given match between the given teams. If the match does not exist, an IllegalArgumentException will be thrown.
@@ -99,4 +83,18 @@ public class FootballMatchTracker implements MatchTracker {
 
         return matchList;
     }
+
+  //____________________________________________________________________________________________________________________
+  String createMatchId(String homeTeam, String awayTeam) {
+    return homeTeam.toLowerCase().trim() + " vs " + awayTeam.toLowerCase().trim();
+  }
+  Match findMatch(String homeTeam, String awayTeam) throws IllegalArgumentException {
+    final String matchId = createMatchId(homeTeam, awayTeam);
+    final Match match = startedMatches.get(matchId);
+    if (match == null) {
+      throw new IllegalArgumentException("Match not found.");
+    }
+    return match;
+  }
+
 }
