@@ -1,12 +1,13 @@
 package com.marin.scoreboard.core;
 
-import com.marin.scoreboard.sport.football.FootballMatch;
-
-import java.util.Map;
+import java.util.List;
 
 public interface MatchTracker {
     void startMatch(String homeTeam, String awayTeam);
-    void updateScore(Match match, String team, int score);
+
+    void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore);
+
     void endMatch(Match match);
-    Map<String, FootballMatch> getSummaryOfMatches();
+
+    List<Match> getSummaryOfMatches();
 }

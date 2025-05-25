@@ -10,6 +10,10 @@ ___
 ### 2. Update score:
 - We must receive two int values for scores.
 - Might add some match id to know for which match we want to update the score.
+- Since we're updating the score of the football match, I would expect to update the score of only one team.
+  However, we are required to accept the values for both of the teams. Also, I would expect
+  that we're increasing a goal at the time, but we are required to accept the pair of absolute values.
+  Therefore, I've decided only to do negative number validation.
 
 ### 3. Finish match:
 - Remove the match from the scoreboard.
