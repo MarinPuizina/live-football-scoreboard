@@ -7,7 +7,7 @@ public interface MatchTracker {
 
     void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore);
 
-    void endMatch(Match match);
+    void endMatch(String homeTeam, String awayTeam);
 
     List<Match> getSummary();
 }

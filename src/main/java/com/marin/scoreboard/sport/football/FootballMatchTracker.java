@@ -70,7 +70,22 @@ public class FootballMatchTracker implements MatchTracker {
         return match;
     }
 
-    public void endMatch(final Match match) {
+
+    /**
+     * Ends the given match between the given teams. If the match does not exist, an IllegalArgumentException will be thrown.
+     *
+     * @param homeTeam must be a non-blank String
+     * @param awayTeam must be a non-blank String
+     */
+    public void endMatch(final String homeTeam, final String awayTeam) throws IllegalArgumentException {
+        MatchValidator.validateTeamNames(homeTeam, awayTeam);
+
+        final String matchId = createMatchId(homeTeam, awayTeam);
+
+        final FootballMatch removedMatch = startedMatches.remove(matchId);
+        if (removedMatch == null) {
+            throw new IllegalArgumentException("Failed ending the match. The match does not exist.");
+        }
     }
 
     /**

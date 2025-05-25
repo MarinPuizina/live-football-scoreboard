@@ -257,4 +257,66 @@ class FootballMatchTrackerTest {
             assertNotNull(matchTracker.getSummary());
         }
     }
+
+    @Nested
+    @DisplayName("endMatch()")
+    class EndMatchTest {
+
+        static Stream<Arguments> validTeamNamesCases() {
+            return Stream.of(
+                    Arguments.of("Team A", "Team B"),
+                    Arguments.of("Real Madrid", "Barcelona"),
+                    Arguments.of("Manchester United", "Liverpool"),
+                    Arguments.of("PSG", "Bayern Munich")
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("validTeamNamesCases")
+        void should_end_match_for_valid_teams(String homeTeam, String awayTeam) {
+            matchTracker.startMatch(homeTeam, awayTeam);
+            assertDoesNotThrow(() -> matchTracker.endMatch(homeTeam, awayTeam));
+        }
+
+        static Stream<Arguments> invalidTeamNamesCases() {
+            return Stream.of(
+                    Arguments.of("Team A", "Team A", "Home and away teams cannot be the same."),
+                    Arguments.of("", "Team B", "Team names cannot be blank."),
+                    Arguments.of("Team A", "", "Team names cannot be blank."),
+                    Arguments.of(" ", "Team B", "Team names cannot be blank."),
+                    Arguments.of("Team A", " ", "Team names cannot be blank."),
+                    Arguments.of(null, "Team B", "Team names cannot be blank."),
+                    Arguments.of("Team A", null, "Team names cannot be blank.")
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("invalidTeamNamesCases")
+        void should_throw_exception_for_invalid_team_names(String homeTeam, String awayTeam, String expectedErrorMessage) {
+            IllegalArgumentException actualException = assertThrows(IllegalArgumentException.class,
+                    () -> matchTracker.endMatch(homeTeam, awayTeam));
+
+            assertEquals(expectedErrorMessage, actualException.getMessage());
+        }
+
+        @Test
+        void should_throw_exception_when_ending_non_existent_match() {
+            String homeTeam = "Non-existent Team A";
+            String awayTeam = "Non-existent Team B";
+
+            IllegalArgumentException actualException = assertThrows(IllegalArgumentException.class,
+                    () -> matchTracker.endMatch(homeTeam, awayTeam));
+
+            assertEquals("Failed ending the match. The match does not exist.", actualException.getMessage());
+        }
+
+        @Test
+        void should_remove_match_from_summary() {
+            matchTracker.startMatch("Team A", "Team B");
+            matchTracker.endMatch("Team A", "Team B");
+            List<Match> summary = matchTracker.getSummary();
+
+            assertEquals(0, summary.size());
+        }
+    }
 }

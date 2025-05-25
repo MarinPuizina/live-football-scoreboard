@@ -16,10 +16,26 @@ ___
   Therefore, I've decided only to do negative number validation.
 
 ### 3. Finish match:
-- Remove the match from the scoreboard.
+- Will remove the match from the match tracker.
+- I've decided to throw an exception if we're trying to remove a non-existent match.
 
 ### 4. Get summary:
 - I'm guessing we can return the data in any format, as long as the data is ordered correctly.
+  Therefore, I'm returning a map of FootballMatches. That way the user gets the most data.
+
+___
+## How to use the library:
+- I've created a factory method for creating a FootballMatchTracker. I like this approach since it's straightforward to
+  add another type of trackers and provide a new factory method.
+
+Code: 
+
+    MatchTracker tracker = MatchTrackerFactory.createFootballMatchTracker();
+    footballMatchTracker.endMatch("Croatia", "Norway");
+    footballMatchTracker.updateScore("Croatia", "Norway", 1, 0);
+    footballMatchTracker.getSummary();
+    footballMatchTracker.endMatch("Croatia", "Norway");
+
 
 ___
 ## Match Object:
