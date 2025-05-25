@@ -1,5 +1,6 @@
 package com.marin.scoreboard.sport.football;
 
+import com.marin.scoreboard.core.Match;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -8,10 +9,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FootballMatchTrackerTest {
@@ -205,6 +208,53 @@ class FootballMatchTrackerTest {
             matchTracker.startMatch(homeTeam, awayTeam);
 
             assertDoesNotThrow(() -> matchTracker.findMatch(homeTeam, awayTeam));
+        }
+    }
+
+    @Nested
+    @DisplayName("getSummary()")
+    class GetSummaryTest {
+        @Test
+        void should_return_results_sorted_by_high_score_and_creation() {
+            matchTracker.startMatch("Mexico", "Canada");
+            matchTracker.updateScore("Mexico", "Canada", 0, 5);
+            matchTracker.startMatch("Spain", "Brazil");
+            matchTracker.updateScore("Spain", "Brazil", 10, 2);
+            matchTracker.startMatch("Germany", "France");
+            matchTracker.updateScore("Germany", "France", 2, 2);
+            matchTracker.startMatch("Uruguay", "Italy");
+            matchTracker.updateScore("Uruguay", "Italy", 6, 6);
+            matchTracker.startMatch("Argentina", "Australia");
+            matchTracker.updateScore("Argentina", "Australia", 3, 1);
+            matchTracker.startMatch("Croatia", "Norway");
+            matchTracker.updateScore("Croatia", "Norway", 6, 6);
+
+            List<Match> summary = matchTracker.getSummary();
+
+            assertEquals(6, summary.size());
+
+            assertEquals("Croatia", summary.get(0).getHomeTeam());
+            assertEquals("Norway", summary.get(0).getAwayTeam());
+
+            assertEquals("Uruguay", summary.get(1).getHomeTeam());
+            assertEquals("Italy", summary.get(1).getAwayTeam());
+
+            assertEquals("Spain", summary.get(2).getHomeTeam());
+            assertEquals("Brazil", summary.get(2).getAwayTeam());
+
+            assertEquals("Mexico", summary.get(3).getHomeTeam());
+            assertEquals("Canada", summary.get(3).getAwayTeam());
+
+            assertEquals("Argentina", summary.get(4).getHomeTeam());
+            assertEquals("Australia", summary.get(4).getAwayTeam());
+
+            assertEquals("Germany", summary.get(5).getHomeTeam());
+            assertEquals("France", summary.get(5).getAwayTeam());
+        }
+
+        @Test
+        void should_not_return_null() {
+            assertNotNull(matchTracker.getSummary());
         }
     }
 }

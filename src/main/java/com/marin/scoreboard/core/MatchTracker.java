@@ -9,5 +9,5 @@ public interface MatchTracker {
 
     void endMatch(Match match);
 
-    List<Match> getSummaryOfMatches();
+    List<Match> getSummary();
 }

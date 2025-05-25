@@ -5,58 +5,58 @@ import java.util.StringJoiner;
 public class Match {
 
     private final String id;
-    private final String homeTeamName;
-    private final String awayTeamName;
-    private int homeTeamScore;
-    private int awayTeamScore;
+    private final String homeTeam;
+    private final String awayTeam;
+    private int homeScore;
+    private int awayScore;
 
     public Match(final String id,
-                 final String homeTeamName,
-                 final String awayTeamName) {
+                 final String homeTeam,
+                 final String awayTeam) {
         this.id = id;
-        this.homeTeamName = homeTeamName;
-        this.awayTeamName = awayTeamName;
-        this.homeTeamScore = 0;
-        this.awayTeamScore = 0;
+        this.homeTeam = homeTeam;
+        this.awayTeam = awayTeam;
+        this.homeScore = 0;
+        this.awayScore = 0;
     }
 
     public String getId() {
         return id;
     }
 
-    public String getHomeTeamName() {
-        return homeTeamName;
+    public String getHomeTeam() {
+        return homeTeam;
     }
 
-    public String getAwayTeamName() {
-        return awayTeamName;
+    public String getAwayTeam() {
+        return awayTeam;
     }
 
-    public int getHomeTeamScore() {
-        return homeTeamScore;
+    public int getHomeScore() {
+        return homeScore;
     }
 
-    public int getAwayTeamScore() {
-        return awayTeamScore;
+    public int getAwayScore() {
+        return awayScore;
     }
 
-    public void updateScore(final int homeTeamScore, final int awayTeamScore) {
-        this.homeTeamScore = homeTeamScore;
-        this.awayTeamScore = awayTeamScore;
+    public void updateScore(final int homeScore, final int awayScore) {
+        this.homeScore = homeScore;
+        this.awayScore = awayScore;
     }
 
     public int getTotalScore() {
-        return homeTeamScore + awayTeamScore;
+        return homeScore + awayScore;
     }
 
     @Override
     public String toString() {
         return new StringJoiner(", ", Match.class.getSimpleName() + "[", "]")
                 .add("id='" + id + "'")
-                .add("homeTeamName='" + homeTeamName + "'")
-                .add("awayTeamName='" + awayTeamName + "'")
-                .add("homeTeamScore=" + homeTeamScore)
-                .add("awayTeamScore=" + awayTeamScore)
+                .add("homeTeam='" + homeTeam + "'")
+                .add("awayTeam='" + awayTeam + "'")
+                .add("homeScore=" + homeScore)
+                .add("awayScore=" + awayScore)
                 .toString();
     }
 }

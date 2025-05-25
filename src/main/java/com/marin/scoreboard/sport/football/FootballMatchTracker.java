@@ -3,7 +3,6 @@ package com.marin.scoreboard.sport.football;
 import com.marin.scoreboard.core.Match;
 import com.marin.scoreboard.core.MatchTracker;
 import com.marin.scoreboard.core.MatchValidator;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,7 +73,11 @@ public class FootballMatchTracker implements MatchTracker {
     public void endMatch(final Match match) {
     }
 
-    public List<Match> getSummaryOfMatches() {
+    /**
+     * @return a list of all started matches, sorted by total score and by time of creation.
+     *    If two matches have the same total score, the match that started last will come first in the list.
+     */
+    public List<Match> getSummary() {
         List<Match> matchList = new ArrayList<>(startedMatches.values());
         Collections.reverse(matchList);
         matchList.sort(Comparator.comparingInt(Match::getTotalScore).reversed());
