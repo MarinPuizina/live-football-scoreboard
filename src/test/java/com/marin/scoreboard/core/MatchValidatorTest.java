@@ -17,6 +17,9 @@ class MatchValidatorTest {
     class ValidateTeamNamesTests {
         static Stream<Arguments> validTeamNamesCases() {
             return Stream.of(
+                    Arguments.of("México", "Team B"),
+                    Arguments.of("Team-A", "Team B"),
+                    Arguments.of("Team A", "Team-B"),
                     Arguments.of("Team A", "Team B"),
                     Arguments.of("Real Madrid", "Barcelona"),
                     Arguments.of("Manchester United", "Liverpool"),
@@ -32,6 +35,8 @@ class MatchValidatorTest {
 
         static Stream<Arguments> invalidTeamNamesCases() {
             return Stream.of(
+                    Arguments.of("Team 12", "Team A", "Team names must contain only letters, spaces, apostrophes, or dashes."),
+                    Arguments.of("team a", "TEAM 12", "Team names must contain only letters, spaces, apostrophes, or dashes."),
                     Arguments.of("Team A", "Team A", "Home and away teams cannot be the same."),
                     Arguments.of("team a", "TEAM A", "Home and away teams cannot be the same."),
                     Arguments.of("", "Team B", "Team names cannot be blank."),

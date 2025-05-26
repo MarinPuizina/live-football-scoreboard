@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -63,7 +64,7 @@ class FootballMatchTrackerTest {
             IllegalArgumentException actualException =
                     assertThrows(IllegalArgumentException.class, () -> matchTracker.startMatch("Team A", "Team B"));
 
-            assertEquals("The match is already in progress.", actualException.getMessage());
+            assertEquals("The match containing those teams is already in progress.", actualException.getMessage());
         }
 
         static Stream<Arguments> validTeamNamesCases() {
@@ -217,45 +218,96 @@ class FootballMatchTrackerTest {
     class GetSummaryTest {
         @Test
         void should_return_results_sorted_by_high_score_and_creation() {
-            matchTracker.startMatch("Mexico", "Canada");
-            matchTracker.updateScore("Mexico", "Canada", 0, 5);
-            matchTracker.startMatch("Spain", "Brazil");
-            matchTracker.updateScore("Spain", "Brazil", 10, 2);
-            matchTracker.startMatch("Germany", "France");
-            matchTracker.updateScore("Germany", "France", 2, 2);
-            matchTracker.startMatch("Uruguay", "Italy");
-            matchTracker.updateScore("Uruguay", "Italy", 6, 6);
-            matchTracker.startMatch("Argentina", "Australia");
-            matchTracker.updateScore("Argentina", "Australia", 3, 1);
-            matchTracker.startMatch("Croatia", "Norway");
-            matchTracker.updateScore("Croatia", "Norway", 6, 6);
+            List<Object[]> matches = List.of(
+                    new Object[]{"Mexico", "Canada", 0, 5},
+                    new Object[]{"Spain", "Brazil", 10, 2},
+                    new Object[]{"Germany", "France", 2, 2},
+                    new Object[]{"Uruguay", "Italy", 6, 6},
+                    new Object[]{"Argentina", "Australia", 3, 1},
+                    new Object[]{"Croatia", "Norway", 6, 6}
+            );
+
+            for (Object[] m : matches) {
+                matchTracker.startMatch((String) m[0], (String) m[1]);
+                matchTracker.updateScore((String) m[0], (String) m[1], (int) m[2], (int) m[3]);
+            }
 
             List<Match> summary = matchTracker.getSummary();
-
             assertEquals(6, summary.size());
 
-            assertEquals("Croatia", summary.get(0).getHomeTeam());
-            assertEquals("Norway", summary.get(0).getAwayTeam());
+            List<String[]> expectedOrder = List.of(
+                    new String[]{"Croatia", "Norway"},
+                    new String[]{"Uruguay", "Italy"},
+                    new String[]{"Spain", "Brazil"},
+                    new String[]{"Mexico", "Canada"},
+                    new String[]{"Argentina", "Australia"},
+                    new String[]{"Germany", "France"}
+            );
 
-            assertEquals("Uruguay", summary.get(1).getHomeTeam());
-            assertEquals("Italy", summary.get(1).getAwayTeam());
-
-            assertEquals("Spain", summary.get(2).getHomeTeam());
-            assertEquals("Brazil", summary.get(2).getAwayTeam());
-
-            assertEquals("Mexico", summary.get(3).getHomeTeam());
-            assertEquals("Canada", summary.get(3).getAwayTeam());
-
-            assertEquals("Argentina", summary.get(4).getHomeTeam());
-            assertEquals("Australia", summary.get(4).getAwayTeam());
-
-            assertEquals("Germany", summary.get(5).getHomeTeam());
-            assertEquals("France", summary.get(5).getAwayTeam());
+            for (int i = 0; i < expectedOrder.size(); i++) {
+                assertEquals(expectedOrder.get(i)[0], summary.get(i).getHomeTeam());
+                assertEquals(expectedOrder.get(i)[1], summary.get(i).getAwayTeam());
+            }
         }
 
         @Test
         void should_not_return_null() {
             assertNotNull(matchTracker.getSummary());
+        }
+
+        @Test
+        void should_return_results_sorted_by_newest_started() {
+            List<Object[]> matches = List.of(
+                    new Object[]{"Mexico", "Canada"},
+                    new Object[]{"Spain", "Brazil"},
+                    new Object[]{"Germany", "France"}
+            );
+
+            for (Object[] m : matches) {
+                matchTracker.startMatch((String) m[0], (String) m[1]);
+            }
+
+            List<Match> summary = matchTracker.getSummary();
+            assertEquals(3, summary.size());
+
+            List<String[]> expectedOrder = List.of(
+                    new String[]{"Germany", "France"},
+                    new String[]{"Spain", "Brazil"},
+                    new String[]{"Mexico", "Canada"}
+            );
+
+            for (int i = 0; i < expectedOrder.size(); i++) {
+                assertEquals(expectedOrder.get(i)[0], summary.get(i).getHomeTeam());
+                assertEquals(expectedOrder.get(i)[1], summary.get(i).getAwayTeam());
+            }
+        }
+
+        @Test
+        void should_return_sorted_by_newest_started_even_when_updating_score() {
+            List<Object[]> matches = List.of(
+                new Object[]{"Mexico", "Canada"},
+                new Object[]{"Spain", "Brazil"},
+                new Object[]{"Germany", "France"}
+            );
+
+            for (Object[] m : matches) {
+                matchTracker.startMatch((String) m[0], (String) m[1]);
+            }
+            matchTracker.updateScore("Spain", "Brazil", 0, 0);
+
+            List<Match> summary = matchTracker.getSummary();
+            assertEquals(3, summary.size());
+
+            List<String[]> expectedOrder = List.of(
+                    new String[]{"Germany", "France"},
+                    new String[]{"Spain", "Brazil"},
+                    new String[]{"Mexico", "Canada"}
+            );
+
+            for (int i = 0; i < expectedOrder.size(); i++) {
+                assertEquals(expectedOrder.get(i)[0], summary.get(i).getHomeTeam());
+                assertEquals(expectedOrder.get(i)[1], summary.get(i).getAwayTeam());
+            }
         }
     }
 
@@ -318,6 +370,62 @@ class FootballMatchTrackerTest {
             List<Match> summary = matchTracker.getSummary();
 
             assertEquals(0, summary.size());
+        }
+    }
+
+    @Nested
+    @DisplayName("checkIfTeamsAreAlreadyPlaying()")
+    class CheckIfTeamsAreAlreadyPlayingTest {
+
+        static Stream<Arguments> matchAlreadyExistsTestCases() {
+            return Stream.of(
+                    Arguments.of("Team A", "Team B", "The match containing those teams is already in progress."),
+                    Arguments.of("Team A", "Team B", "The match containing those teams is already in progress.")
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("matchAlreadyExistsTestCases")
+        void should_throw_exception_when_match_already_exists(String homeTeam, String awayTeam, String expectedErrorMessage) {
+            FootballMatchTrackerTest.this.matchTracker.startMatch(homeTeam, awayTeam);
+
+            IllegalArgumentException actualException = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> FootballMatchTrackerTest.this.matchTracker.checkIfTeamsAreAlreadyPlaying(awayTeam, homeTeam)
+            );
+
+            assertEquals(expectedErrorMessage, actualException.getMessage());
+        }
+
+        static Stream<Arguments> matchDoesNotExistTestCases() {
+            return Stream.of(
+                    Arguments.of("Team C", "Team D", "team c vs team d"),
+                    Arguments.of("Team E", "Team F", "team e vs team f"),
+                    Arguments.of("Team G", "Team H", "team g vs team h")
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("matchDoesNotExistTestCases")
+        void should_return_match_id_when_match_does_not_exist(String homeTeam, String awayTeam, String expectedMatchId) {
+            String actualMatchId = assertDoesNotThrow(
+                    () -> FootballMatchTrackerTest.this.matchTracker.checkIfTeamsAreAlreadyPlaying(homeTeam, awayTeam)
+            );
+
+            assertEquals(expectedMatchId, actualMatchId);
+        }
+
+        @Test
+        void should_return_different_match_ids_for_different_team_pairs() {
+            String matchId1 = assertDoesNotThrow(
+                    () -> FootballMatchTrackerTest.this.matchTracker.checkIfTeamsAreAlreadyPlaying("Team E", "Team F")
+            );
+
+            String matchId2 = assertDoesNotThrow(
+                    () -> FootballMatchTrackerTest.this.matchTracker.checkIfTeamsAreAlreadyPlaying("Team G", "Team H")
+            );
+
+            assertNotEquals(matchId1, matchId2);
         }
     }
 }

@@ -14,6 +14,7 @@ ___
   However, we are required to accept the values for both of the teams. Also, I would expect
   that we're increasing by one goal at a time, but we are required to accept the pair of absolute values.
 - The score values cannot be negative numbers.
+- I've decided to allow updating with the already set score since no limitations were specified.
 
 ### 3. Finish match:
 - Will remove the match from the match tracker.
@@ -41,6 +42,8 @@ ___
 ## Design:
 
     com.marin.scoreboard
+    ├── constant
+    │   └── ErrorMessages.java
     ├── core
     │   ├── Match.java
     │   ├── MatchTracker.java
@@ -52,6 +55,8 @@ ___
     └── MatchTracerFactory.java
 
 
+- `core`: Contains ErrorMessages class with constants.
+  - `ErrorMessages`: Class containing all error messages thrown by exceptions.
 - `core`: Contains core interfaces and classes not specific to any sport.
   - `Match`: Represents a generic sports match.
   - `MatchTracker`: Defines the contract for managing matches.
@@ -67,7 +72,10 @@ to make the getSummary method return a proper dataset.
 However, I've decided to use data structures instead. LinkedHashMap works great in this case, since I get the benefit of
 having a key value map. And being it linked, keeps track of the match start "time". Which made it easy to create the 
 algorithm for getSummary method.
+- MatchTrackerFactory.java is a factory class that provides the factory methods. If we add additional mach trackers, it will
+  be straightforward to add additional factory methods to support them.
 - I created the MatchTracker.java interface since we have a clearly defined behavior. Also, it makes it easy to add additional 
 implementations at a later date.
-- MatchTracerFactory.java is a factory class that provides the factory methods. If we add additional mach trackers, it will
-be straightforward to add additional factory methods to support them.
+- FootballMatchTracker.java is the brain of the operation. It implements the MatchTracker interface.
+- MatchValidator.java is a place where custom validation can be found. For the team names I'm allowing all Unicode letters, 
+  spaces, apostrophes and dashes. 
