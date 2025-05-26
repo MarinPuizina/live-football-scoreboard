@@ -8,13 +8,16 @@ import com.marin.scoreboard.core.MatchValidator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class FootballMatchTracker implements MatchTracker {
 
     private final Map<String, FootballMatch> startedMatches = new LinkedHashMap<>();
+    private final Set<String> teamsPlaying = new HashSet<>();
 
     /**
      * Starts a new football match between the given teams.
@@ -22,15 +25,17 @@ public class FootballMatchTracker implements MatchTracker {
      *
      * @param homeTeam must ba a non-blank String
      * @param awayTeam must ba a non-blank String
-     * @throws IllegalArgumentException if arguments fail validation or if the match already exists.
+     * @throws IllegalArgumentException if arguments fail validation or if any team is already playing a match.
      */
     public void startMatch(final String homeTeam, final String awayTeam) throws IllegalArgumentException {
         MatchValidator.validateTeamNames(homeTeam, awayTeam);
+        MatchValidator.checkIfTeamsAreAlreadyPlaying(teamsPlaying, homeTeam, awayTeam);
 
-        final String matchId = checkIfTeamsAreAlreadyPlaying(homeTeam, awayTeam);
-
+        String matchId = createMatchId(homeTeam, awayTeam);
         final FootballMatch footballMatch = new FootballMatch(matchId, homeTeam, awayTeam);
         startedMatches.put(matchId, footballMatch);
+        teamsPlaying.add(homeTeam);
+        teamsPlaying.add(awayTeam);
     }
 
     /**
@@ -70,6 +75,9 @@ public class FootballMatchTracker implements MatchTracker {
         if (removedMatch == null) {
             throw new IllegalArgumentException(ErrorMessages.MATCH_NOT_FOUND_FAILED_ENDING);
         }
+
+        teamsPlaying.remove(homeTeam);
+        teamsPlaying.remove(awayTeam);
     }
 
     /**
@@ -86,28 +94,17 @@ public class FootballMatchTracker implements MatchTracker {
 
     //____________________________________________________________________________________________________________________
 
-    String createMatchId(String homeTeam, String awayTeam) {
+    String createMatchId(final String homeTeam, final String awayTeam) {
         return homeTeam.toLowerCase().trim() + " vs " + awayTeam.toLowerCase().trim();
     }
 
-    Match findMatch(String homeTeam, String awayTeam) throws IllegalArgumentException {
+    Match findMatch(final String homeTeam, final String awayTeam) throws IllegalArgumentException {
         final String matchId = createMatchId(homeTeam, awayTeam);
         final Match match = startedMatches.get(matchId);
         if (match == null) {
             throw new IllegalArgumentException(ErrorMessages.MATCH_NOT_FOUND);
         }
         return match;
-    }
-
-    String checkIfTeamsAreAlreadyPlaying(String homeTeam, String awayTeam) {
-        final String matchId = createMatchId(homeTeam, awayTeam);
-        final String reversedMatchId = createMatchId(awayTeam, homeTeam);
-
-        if (startedMatches.containsKey(matchId) || startedMatches.containsKey(reversedMatchId)) {
-            throw new IllegalArgumentException(ErrorMessages.MATCH_ALREADY_IN_PROGRESS);
-        }
-
-        return matchId;
     }
 
 }

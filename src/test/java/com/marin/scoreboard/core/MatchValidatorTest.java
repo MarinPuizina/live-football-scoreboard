@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -96,6 +97,45 @@ class MatchValidatorTest {
                     assertThrows(IllegalArgumentException.class, () -> MatchValidator.validateTeamScores(homeScore, awayScore));
 
             assertEquals(expectedExceptionMessage, actualException.getMessage());
+        }
+    }
+
+    @Nested
+    @DisplayName("checkIfTeamsAreAlreadyPlaying()")
+    class CheckIfTeamsAreAlreadyPlayingTests {
+
+        static Stream<Arguments> validTeamsCases() {
+            return Stream.of(
+                    Arguments.of(Set.of("Team C", "Team D"), "Team A", "Team B"),
+                    Arguments.of(Set.of(), "Team A", "Team B"),
+                    Arguments.of(Set.of("Team C"), "Team A", "Team B")
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("validTeamsCases")
+        void should_not_throw_exception_when_teams_are_not_playing(Set<String> teamsPlaying, String homeTeam, String awayTeam) {
+            assertDoesNotThrow(() -> MatchValidator.checkIfTeamsAreAlreadyPlaying(teamsPlaying, homeTeam, awayTeam));
+        }
+
+        static Stream<Arguments> invalidTeamsCases() {
+            return Stream.of(
+                    Arguments.of(Set.of("Team A", "Team C"), "Team A", "Team B", "Team: Team A is already playing a match."),
+                    Arguments.of(Set.of("Team B", "Team C"), "Team A", "Team B", "Team: Team B is already playing a match."),
+                    Arguments.of(Set.of("Team A", "Team B"), "Team A", "Team B",
+                            "Team: Team A is already playing a match.; Team: Team B is already playing a match.")
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("invalidTeamsCases")
+        void should_throw_exception_when_team_is_already_playing(Set<String> teamsPlaying,
+                                                                 String homeTeam,
+                                                                 String awayTeam,
+                                                                 String expectedExceptionMessage) {
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                    () -> MatchValidator.checkIfTeamsAreAlreadyPlaying(teamsPlaying, homeTeam, awayTeam));
+            assertEquals(String.format(expectedExceptionMessage), exception.getMessage());
         }
     }
 }

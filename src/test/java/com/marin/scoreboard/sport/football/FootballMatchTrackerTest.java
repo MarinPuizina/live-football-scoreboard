@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -64,7 +63,7 @@ class FootballMatchTrackerTest {
             IllegalArgumentException actualException =
                     assertThrows(IllegalArgumentException.class, () -> matchTracker.startMatch("Team A", "Team B"));
 
-            assertEquals("The match containing those teams is already in progress.", actualException.getMessage());
+            assertEquals("Team: Team A is already playing a match.", actualException.getMessage());
         }
 
         static Stream<Arguments> validTeamNamesCases() {
@@ -370,62 +369,6 @@ class FootballMatchTrackerTest {
             List<Match> summary = matchTracker.getSummary();
 
             assertEquals(0, summary.size());
-        }
-    }
-
-    @Nested
-    @DisplayName("checkIfTeamsAreAlreadyPlaying()")
-    class CheckIfTeamsAreAlreadyPlayingTest {
-
-        static Stream<Arguments> matchAlreadyExistsTestCases() {
-            return Stream.of(
-                    Arguments.of("Team A", "Team B", "The match containing those teams is already in progress."),
-                    Arguments.of("Team A", "Team B", "The match containing those teams is already in progress.")
-            );
-        }
-
-        @ParameterizedTest
-        @MethodSource("matchAlreadyExistsTestCases")
-        void should_throw_exception_when_match_already_exists(String homeTeam, String awayTeam, String expectedErrorMessage) {
-            FootballMatchTrackerTest.this.matchTracker.startMatch(homeTeam, awayTeam);
-
-            IllegalArgumentException actualException = assertThrows(
-                    IllegalArgumentException.class,
-                    () -> FootballMatchTrackerTest.this.matchTracker.checkIfTeamsAreAlreadyPlaying(awayTeam, homeTeam)
-            );
-
-            assertEquals(expectedErrorMessage, actualException.getMessage());
-        }
-
-        static Stream<Arguments> matchDoesNotExistTestCases() {
-            return Stream.of(
-                    Arguments.of("Team C", "Team D", "team c vs team d"),
-                    Arguments.of("Team E", "Team F", "team e vs team f"),
-                    Arguments.of("Team G", "Team H", "team g vs team h")
-            );
-        }
-
-        @ParameterizedTest
-        @MethodSource("matchDoesNotExistTestCases")
-        void should_return_match_id_when_match_does_not_exist(String homeTeam, String awayTeam, String expectedMatchId) {
-            String actualMatchId = assertDoesNotThrow(
-                    () -> FootballMatchTrackerTest.this.matchTracker.checkIfTeamsAreAlreadyPlaying(homeTeam, awayTeam)
-            );
-
-            assertEquals(expectedMatchId, actualMatchId);
-        }
-
-        @Test
-        void should_return_different_match_ids_for_different_team_pairs() {
-            String matchId1 = assertDoesNotThrow(
-                    () -> FootballMatchTrackerTest.this.matchTracker.checkIfTeamsAreAlreadyPlaying("Team E", "Team F")
-            );
-
-            String matchId2 = assertDoesNotThrow(
-                    () -> FootballMatchTrackerTest.this.matchTracker.checkIfTeamsAreAlreadyPlaying("Team G", "Team H")
-            );
-
-            assertNotEquals(matchId1, matchId2);
         }
     }
 }

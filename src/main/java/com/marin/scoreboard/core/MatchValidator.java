@@ -3,6 +3,9 @@ package com.marin.scoreboard.core;
 import com.marin.scoreboard.constant.ErrorMessages;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public final class MatchValidator {
@@ -30,5 +33,19 @@ public final class MatchValidator {
         if (homeScore < 0 || awayScore < 0) {
             throw new IllegalArgumentException(ErrorMessages.TEAM_SCORES_CANNOT_BE_NEGATIVE);
         }
+    }
+
+    public static void checkIfTeamsAreAlreadyPlaying(final Set<String> teamsPlaying, final String homeTeam, final String awayTeam) {
+        List<String> errors = new ArrayList<>();
+        if (teamsPlaying.contains(homeTeam)) {
+            errors.add(String.format(ErrorMessages.TEAM_ALREADY_PLAYING, homeTeam));
+        }
+        if (teamsPlaying.contains(awayTeam)) {
+            errors.add(String.format(ErrorMessages.TEAM_ALREADY_PLAYING, awayTeam));
+        }
+        if (!errors.isEmpty()) {
+            throw new IllegalArgumentException(String.join("; ", errors));
+        }
+
     }
 }
