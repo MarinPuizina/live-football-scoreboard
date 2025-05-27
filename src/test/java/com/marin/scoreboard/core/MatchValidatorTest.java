@@ -120,9 +120,21 @@ class MatchValidatorTest {
 
         static Stream<Arguments> invalidTeamsCases() {
             return Stream.of(
-                    Arguments.of(Set.of("Team A", "Team C"), "Team A", "Team B", "Team: Team A is already playing a match."),
-                    Arguments.of(Set.of("Team B", "Team C"), "Team A", "Team B", "Team: Team B is already playing a match."),
-                    Arguments.of(Set.of("Team A", "Team B"), "Team A", "Team B",
+                    Arguments.of(
+                            Set.of("team a".trim().toLowerCase(), "team c".trim().toLowerCase()),
+                            "Team A", "Team B", "Team: Team A is already playing a match."),
+                    Arguments.of(
+                            Set.of("Team A".trim().toLowerCase(), "Team C".trim().toLowerCase()),
+                            "team a", "team b", "Team: team a is already playing a match."),
+                    Arguments.of(
+                            Set.of("Team A".trim().toLowerCase(), "Team C".trim().toLowerCase()),
+                            "Team A", "Team B", "Team: Team A is already playing a match."),
+                    Arguments.of(
+                            Set.of("Team B".trim().toLowerCase(), "Team C".trim().toLowerCase()),
+                            "Team A", "Team B", "Team: Team B is already playing a match."),
+                    Arguments.of(
+                            Set.of("Team A".trim().toLowerCase(), "Team B".trim().toLowerCase()),
+                            "Team A", "Team B",
                             "Team: Team A is already playing a match.; Team: Team B is already playing a match.")
             );
         }

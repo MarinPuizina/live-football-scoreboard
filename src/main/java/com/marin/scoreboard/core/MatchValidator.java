@@ -37,15 +37,15 @@ public final class MatchValidator {
 
     public static void checkIfTeamsAreAlreadyPlaying(final Set<String> teamsPlaying, final String homeTeam, final String awayTeam) {
         List<String> errors = new ArrayList<>();
-        if (teamsPlaying.contains(homeTeam)) {
+        if (teamsPlaying.contains(homeTeam.trim().toLowerCase())) {
             errors.add(String.format(ErrorMessages.TEAM_ALREADY_PLAYING, homeTeam));
         }
-        if (teamsPlaying.contains(awayTeam)) {
+        if (teamsPlaying.contains(awayTeam.trim().toLowerCase())) {
             errors.add(String.format(ErrorMessages.TEAM_ALREADY_PLAYING, awayTeam));
         }
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException(String.join("; ", errors));
         }
-
     }
+
 }

@@ -34,8 +34,8 @@ public class FootballMatchTracker implements MatchTracker {
         String matchId = createMatchId(homeTeam, awayTeam);
         final FootballMatch footballMatch = new FootballMatch(matchId, homeTeam, awayTeam);
         startedMatches.put(matchId, footballMatch);
-        teamsPlaying.add(homeTeam);
-        teamsPlaying.add(awayTeam);
+        teamsPlaying.add(homeTeam.trim().toLowerCase());
+        teamsPlaying.add(awayTeam.trim().toLowerCase());
     }
 
     /**
@@ -95,7 +95,7 @@ public class FootballMatchTracker implements MatchTracker {
     //____________________________________________________________________________________________________________________
 
     String createMatchId(final String homeTeam, final String awayTeam) {
-        return homeTeam.toLowerCase().trim() + " vs " + awayTeam.toLowerCase().trim();
+        return homeTeam.trim().toLowerCase() + " vs " + awayTeam.trim().toLowerCase();
     }
 
     Match findMatch(final String homeTeam, final String awayTeam) throws IllegalArgumentException {

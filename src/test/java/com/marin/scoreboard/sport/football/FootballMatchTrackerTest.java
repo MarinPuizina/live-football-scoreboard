@@ -63,7 +63,8 @@ class FootballMatchTrackerTest {
             IllegalArgumentException actualException =
                     assertThrows(IllegalArgumentException.class, () -> matchTracker.startMatch("Team A", "Team B"));
 
-            assertEquals("Team: Team A is already playing a match.", actualException.getMessage());
+            assertEquals("Team: Team A is already playing a match.; Team: Team B is already playing a match.",
+                    actualException.getMessage());
         }
 
         static Stream<Arguments> validTeamNamesCases() {
